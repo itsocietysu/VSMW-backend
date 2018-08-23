@@ -1,0 +1,112 @@
+{
+  "profiles": [
+    {
+      "name": "local",
+      "server_host": "127.0.0.1:4201",
+      "swagger_port": "8081",
+      "api_port": "4201",
+      "each_db": {
+        "host": "localhost",
+        "port": 5432,
+        "sid": "each",
+        "user": "EACH",
+        "password": "each",
+        "direct": null,
+        "pool_size": 2
+      },
+      "oidc": {
+        "each_oauth2": {
+          "client_id": "624089359951-jmnqgadh7e4jg28k677n0618puc5q7tv.apps.googleusercontent.com",
+          "client_secret": "kvL7ku63K82y9fjCF7vD-Sv1",
+          "realm": "http://GOOOGLE",
+          "scope": [],
+          "authorization_url": "https://accounts.google.com/o/oauth2/auth",
+          "access_token_url": "https://www.googleapis.com/oauth2/v4/token",
+          "user_info_url": "https://www.googleapis.com/plus/v1/people/me",
+          "check_token_url": "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="
+        }
+      }
+    },
+    {
+      "name": "local_on_dev",
+      "server_host": "127.0.0.1:4201",
+      "swagger_port": "8081",
+      "api_port": "4201",
+      "each_db": {
+        "host": "185.122.59.110",
+        "port": 5433,
+        "sid": "each_dev",
+        "user": "each",
+        "password": "Ellesmera2006",
+        "direct": null,
+        "pool_size": 20
+      },
+      "oidc": {
+        "each_oauth2": {
+          "client_id": "RwFuaDC2TifPUf9jg0Nv71eQeLlVLorRzeXcADqjT0Ye3wWw",
+          "client_secret": "",
+          "realm": "http://GOOOGLE",
+          "scope": [],
+          "authorization_url": "http://each.itsociety.su:5000/oauth2/authorize",
+          "access_token_url": "http://each.itsociety.su:5000/oauth2/token",
+          "user_info_url": "http://each.itsociety.su:5000/oauth2/me",
+          "check_token_url": "http://each.itsociety.su:5000/oauth2/tokeninfo?access_token="
+        }
+      }
+    },
+    {
+      "name": "dev",
+      "server_host": "each.itsociety.su:4201",
+      "swagger_port": "8081",
+      "api_port": "4201",
+      "each_db": {
+        "host": "185.122.59.110",
+        "port": 5433,
+        "sid": "each_dev",
+        "user": "each",
+        "password": "Ellesmera2006",
+        "direct": null,
+        "pool_size": 20
+      },
+      "oidc": {
+        "each_oauth2": {
+          "client_id": "624089359951-jmnqgadh7e4jg28k677n0618puc5q7tv.apps.googleusercontent.com",
+          "client_secret": "kvL7ku63K82y9fjCF7vD-Sv1",
+          "realm": "http://GOOOGLE",
+          "scope": [],
+          "authorization_url": "http://each.itsociety.su:5000/oauth2/authorize",
+          "access_token_url": "http://each.itsociety.su:5000/oauth2/token",
+          "user_info_url": "http://each.itsociety.su:5000/oauth2/me",
+          "check_token_url": "http://each.itsociety.su:5000/oauth2/tokeninfo?access_token="
+        }
+      }
+    },
+    {
+      "name": "prod",
+      "server_host": "each.itsociety.su:4200",
+      "swagger_port": "8081",
+      "api_port": "4201",
+      "each_db": {
+        "host": "185.185.40.39",
+        "port": 5432,
+        "sid": "each_prod",
+        "user": "postgres",
+        "password": "9j46cqOn9q463uPW",
+        "direct": null,
+        "pool_size": 20
+      },
+      "oidc": {
+        "each_oauth2": {
+          "client_id": "624089359951-jmnqgadh7e4jg28k677n0618puc5q7tv.apps.googleusercontent.com",
+          "client_secret": "kvL7ku63K82y9fjCF7vD-Sv1",
+          "realm": "http://GOOOGLE",
+          "scope": [],
+          "authorization_url": "http://each.itsociety.su:5000/oauth2/authorize",
+          "access_token_url": "http://each.itsociety.su:5000/oauth2/token",
+          "user_info_url": "http://each.itsociety.su:5000/oauth2/me",
+          "check_token_url": "http://each.itsociety.su:5000/oauth2/tokeninfo?access_token="
+        }
+      }
+    }
+  ]
+}

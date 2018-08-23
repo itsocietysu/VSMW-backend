@@ -1,0 +1,537 @@
+
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.1",
+    "title": "EACH"
+  },
+  "host": "127.0.0.1:4201",
+  "basePath": "/each",
+  "tags": [
+    {
+      "name": "default",
+      "description": "Default feature set"
+    },
+    {
+      "name": "Session",
+      "description": "Session feature set"
+    },
+    {
+      "name": "User",
+      "description": "User feature set"
+    },
+    {
+      "name": "Vote",
+      "description": "Vote feature set"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/version": {
+      "get": {
+        "tags": [
+          "default"
+        ],
+        "summary": "Returns current project version",
+        "description": "Returns current project version",
+        "operationId": "getVersion",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/all": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Returns list of sessions",
+        "description": "",
+        "operationId": "all_session",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/set": {
+      "post": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Set current session",
+        "description": "",
+        "operationId": "set_session",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/current": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Returns current session",
+        "description": "",
+        "operationId": "current_session",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/add": {
+      "post": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Add a new session",
+        "description": "",
+        "operationId": "create_session",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "new_session",
+            "in": "body",
+            "description": "Session encoded in JSON string",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          },
+          "412": {
+            "description": "Name already taken"
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/update": {
+      "put": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Update existing session info",
+        "description": "",
+        "operationId": "update_session",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "new_session",
+            "in": "body",
+            "description": "Session encoded in JSON string",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Session"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Museum not found"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/session/{Id}": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Find session by ID",
+        "description": "Returns a session name",
+        "operationId": "get_session",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of session to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Session"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Museum not found"
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Remove session",
+        "description": "",
+        "operationId": "delete_session",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Session id to unlink",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/user/{fingerprint}": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Add a new user",
+        "description": "",
+        "operationId": "create_fingerprint",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "fingerprint",
+            "in": "path",
+            "description": "User fingerprint to add",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          },
+          "412": {
+            "description": "Name already taken"
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/vote/{session}/{fingerprint}": {
+      "get": {
+        "tags": [
+          "Vote"
+        ],
+        "summary": "Get my vote",
+        "description": "Returns vote result",
+        "operationId": "get_vote",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "session",
+            "in": "path",
+            "description": "Session id",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "fingerprint",
+            "in": "path",
+            "description": "User fingerprint to add",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/vote" : {
+      "post": {
+        "tags": [
+          "Vote"
+        ],
+        "summary": "Add a new vote",
+        "description": "Add a new bote",
+        "operationId": "create_vote",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "new_vote",
+            "in": "body",
+            "description": "Vote encoded in JSON string",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Vote"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          },
+          "412": {
+            "description": "Name already taken"
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "auth_env": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "http://each.itsociety.su:5000/oauth2/authorize",
+      "tokenUrl": "http://each.itsociety.su:5000/oauth2/token",
+      "scopes": {
+        "email": "View your email address",
+        "profile": "View your basic profile info"
+      }
+    }
+  },
+  "definitions": {
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Session": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string",
+          "example": "test"
+        },
+        "type": {
+          "type": "string",
+          "example": "[poll, slider]"
+        },
+        "picture": {
+          "type": "string",
+          "example": "base64 encoded string"
+        },
+        "expires": {
+          "type": "string",
+          "example": "2018-07-18 20:24:00+00:00"
+        },
+        "created": {
+          "type": "string",
+          "example": "2018-07-18 20:24:00+00:00"
+        },
+        "updated": {
+          "type": "string",
+          "example": "2018-07-18 20:24:00+00:00"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "fingerprint": {
+          "type": "string",
+          "example": "example"
+        }
+      }
+    },
+    "Vote": {
+      "type": "object",
+      "required": [
+        "session"
+      ],
+      "properties": {
+        "session": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "fingerprint": {
+          "type": "string",
+          "example": "user_fingerprint"
+        },
+        "value": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    }
+  },
+  "externalDocs": {
+      "description": "Find out more about Swagger",
+       "url": "http://swagger.io"
+  }
+}
