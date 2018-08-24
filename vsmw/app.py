@@ -369,7 +369,7 @@ if 'server_host' in cfg:
         swagger_json = json.loads(f.read(), object_pairs_hook=OrderedDict)
 
     server_host = cfg['server_host']
-    base_name = server_host + '/vsmw'
+    base_name = server_host
     swagger_json['host'] = server_host
 
     baseURL = '/each'
