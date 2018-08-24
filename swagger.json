@@ -226,6 +226,13 @@
         ],
         "parameters": [
           {
+            "name": "id",
+            "in": "formData",
+            "description": "Session you want to modify",
+            "required": true,
+            "type": "integer"
+          },
+          {
             "name": "title",
             "in": "formData",
             "description": "Poll name",
