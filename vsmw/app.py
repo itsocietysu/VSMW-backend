@@ -95,13 +95,13 @@ def all_session(**request_handler_args):
 
 @cache.cache('get_current_session', expire=3600)
 def get_current_session_objects():
-    return obj_to_json([0])
+    return obj_to_json([6])
 
 
 def current_session(**request_handler_args):
     resp = request_handler_args['resp']
 
-    resp.body = get_session_objects()
+    resp.body = get_current_session_objects()
     resp.status = falcon.HTTP_200
 
 
