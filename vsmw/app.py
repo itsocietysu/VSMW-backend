@@ -197,6 +197,7 @@ def get_session(**request_handler_args):
     if id:
         resp.body = get_session_objects(id)
         resp.status = falcon.HTTP_200
+        return
 
     resp.status = falcon.HTTP_400
 
@@ -232,6 +233,7 @@ def get_vote(**request_handler_args):
     if id:
         resp.body = get_vote_objects(session, fingerprint)
         resp.status = falcon.HTTP_200
+        return
 
     resp.status = falcon.HTTP_400
 
