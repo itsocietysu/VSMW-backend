@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 
 from vsmw.Entities.EntityBase import EntityBase
@@ -27,4 +27,32 @@ class EntityVote(EntityBase, Base):
             session.db.add(self)
             session.db.commit()
             return self.session
+
+    @classmethod
+    def stats(cls, id, type):
+        with DBConnection() as session:
+            if type == 'slider':
+                res = list((session.db.query(
+                    func.avg(EntityVote.value).label('average'),
+                    func.count(EntityVote.value).label('count')
+                ).filter_by(session=id).all())[0])
+                print(res[0])
+            else:
+                pos_size = \
+                session.db.query(
+                    func.count(EntityVote.value)
+                ).filter_by(session=id).filter(EntityVote.value != 0).all()[0][0]
+
+                neg_size = \
+                session.db.query(
+                    func.count(EntityVote.value)
+                ).filter_by(session=id).filter(EntityVote.value == 0).all()[0][0]
+
+                summ = pos_size + neg_size
+                pos = int(float(pos_size) / summ * 100.0)
+
+                res = [pos, 100 - pos]
+
+            return [int(_) for _ in res]
+
 

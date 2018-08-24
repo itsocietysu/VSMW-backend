@@ -13,7 +13,7 @@ from vsmw import utils
 from vsmw.db import DBConnection
 from vsmw.serve_swagger import SpecServer
 from vsmw.utils import obj_to_json, getIntPathParam, guess_response_type, date_time_string, admin_access_type_required,\
-fulfill_images
+fulfill_images, getPathParam
 
 from vsmw.Entities.EntityBase import EntityBase
 from vsmw.Entities.EntitySession import EntitySession
@@ -86,34 +86,23 @@ def getVersion(**request_handler_args):
     with open("VERSION") as f:
         resp.body = obj_to_json({"version": f.read()[0:-1]})
 
+
+@cache.cache('get_session_cached_stats', expire=1)
+def get_cached_stats(id, type):
+    return EntityVote.stats(id, type)
+
+
 @admin_access_type_required
 def get_stats_by_id(**request_handler_args):
     resp = request_handler_args['resp']
 
     with DBConnection() as session:
         id = getIntPathParam('id', **request_handler_args)
-        entity = EntitySession.get().filter_by(vid=id).all()
+        entity = get_session_objects(id)
+        stats = get_cached_stats(id, entity[0]["type"])
 
-        obj_dict = {}
-        for _ in entity:
-            obj_dict = _.to_dict()
-
-        is_slider = entity[0].type == 'slider'
-        res = []
-        if is_slider:
-            res = list((session.db.query(
-                func.avg(EntityVote.value).label('average'),
-                func.count(EntityVote.value).label('count')
-            ).filter_by(session=id).all()))
-            print(res[0])
-        else:
-            pos_size = session.db.query(func.count(EntityVote.value)).filter_by(session=id).filter(EntityVote.value!=0).all()[0][0]
-            neg_size = session.db.query(func.count(EntityVote.value)).filter_by(session=id).filter(EntityVote.value==0).all()[0][0]
-            summ = pos_size + neg_size
-            res = [int(float(pos_size) / summ * 100.0), int(float(neg_size) / summ * 100.0)]
-
-        res = [int(_) for _ in res]
-        obj_dict.update({'stats': res})
+        obj_dict = entity[0]
+        obj_dict.update({'stats': stats})
 
     resp.body = obj_to_json(obj_dict)
     resp.status = falcon.HTTP_200
@@ -128,13 +117,13 @@ def all_session(**request_handler_args):
 
 @cache.cache('get_current_session', expire=3600)
 def get_current_session_objects():
-    return obj_to_json([7])
+    return [7]
 
 
 def current_session(**request_handler_args):
     resp = request_handler_args['resp']
 
-    resp.body = get_current_session_objects()
+    resp.body = obj_to_json(get_current_session_objects())
     resp.status = falcon.HTTP_200
 
 
@@ -189,6 +178,7 @@ def update_session(**request_handler_args):
         if id:
             resp.body = obj_to_json([o.to_dict() for o in fulfill_images(base_name, EntitySession.get().filter_by(vid=id).all())])
             resp.status = falcon.HTTP_200
+            cache.invalidate(get_session_objects, 'get_session_func', id)
             return
     except ValueError:
         resp.status = falcon.HTTP_405
@@ -213,6 +203,7 @@ def delete_session(**request_handler_args):
         object = EntitySession.get().filter_by(vid=id).all()
         if not len(object):
             resp.status = falcon.HTTP_200
+            cache.invalidate(get_session_objects, 'get_session_func', id)
             return
 
     resp.status = falcon.HTTP_400
@@ -220,7 +211,7 @@ def delete_session(**request_handler_args):
 
 @cache.cache('get_session_func', expire=3600)
 def get_session_objects(id):
-    return obj_to_json([o.to_dict() for o in fulfill_images(base_name, EntitySession.get().filter_by(vid=id).all())])
+    return [o.to_dict() for o in fulfill_images(base_name, EntitySession.get().filter_by(vid=id).all())]
 
 
 def get_session(**request_handler_args):
@@ -228,7 +219,7 @@ def get_session(**request_handler_args):
 
     id = getIntPathParam("id", **request_handler_args)
     if id:
-        resp.body = get_session_objects(id)
+        resp.body = obj_to_json(get_session_objects(id))
         resp.status = falcon.HTTP_200
         return
 
@@ -255,16 +246,16 @@ def create_fingerprint(**request_handler_args):
 
 @cache.cache('get_vote_func', expire=3600)
 def get_vote_objects(session, fingerprint):
-    return obj_to_json([o.to_dict() for o in EntityVote.get().filter_by(session=session, user=str(fingerprint)).all()])
+    return [o.to_dict() for o in EntityVote.get().filter_by(session=session, user=str(fingerprint)).all()]
 
 
 def get_vote(**request_handler_args):
     resp = request_handler_args['resp']
 
     session     = getIntPathParam("session", **request_handler_args)
-    fingerprint = getIntPathParam("fingerprint", **request_handler_args)
+    fingerprint = getPathParam("fingerprint", **request_handler_args)
     if id:
-        resp.body = get_vote_objects(session, fingerprint)
+        resp.body = obj_to_json(get_vote_objects(session, fingerprint))
         resp.status = falcon.HTTP_200
         return
 
@@ -276,17 +267,6 @@ def create_vote(**request_handler_args):
     resp = request_handler_args['resp']
 
     params = json.loads(req.stream.read().decode('utf-8'))
-
-    # TODO: 1. Текущая сессия? id
-    # TODO: 2. декоратор?
-    # TODO: 3. какой будет код возврата
-    # TODO: 4. Нельзя будет вообще вызвать этот метод когда придет тот самый час?
-
-    # expired = session.db.query(EntitySession.expired).filter_by(vid=   id????   ).all()[0][0]
-    # expired_time = datetime.strptime(expired)
-    # now = datetime.datetime.now()
-    # datetime_now = now.strftime("%d.%m.%Y %H:%M")
-    # if datetime_now <= expired_time:
 
     if 'fingerprint' in params and 'value' in params and 'session' in params:
         cache.invalidate(get_vote_objects, 'get_vote_func', params['session'], params['fingerprint'])
