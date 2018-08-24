@@ -3,10 +3,10 @@
   "swagger": "2.0",
   "info": {
     "version": "0.0.1",
-    "title": "EACH"
+    "title": "VSMW"
   },
   "host": "127.0.0.1:4201",
-  "basePath": "/each",
+  "basePath": "/vsmw",
   "tags": [
     {
       "name": "default",
@@ -81,7 +81,7 @@
         ]
       }
     },
-    "/set": {
+    "/set/{id}": {
       "post": {
         "tags": [
           "Session"
@@ -91,6 +91,16 @@
         "operationId": "set_session",
         "produces": [
           "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of session to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
         ],
         "responses": {
           "200": {
@@ -222,7 +232,7 @@
         ]
       }
     },
-    "/session/{Id}": {
+    "/session/{id}": {
       "get": {
         "tags": [
           "Session"
@@ -475,7 +485,7 @@
           "type": "string",
           "example": "[poll, slider]"
         },
-        "picture": {
+        "image": {
           "type": "string",
           "example": "base64 encoded string"
         },

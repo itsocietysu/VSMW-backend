@@ -2,18 +2,16 @@ FROM python:3.6.6
 
 WORKDIR /usr/src/app
 
-COPY Requirements.txt ./
-RUN pip install --no-cache-dir -r Requirements.txt
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY each/ ./each/
+COPY vsmw/       ./vsmw/
 COPY swagger-ui/ ./swagger-ui/
 
 COPY server.py 		./server.py
 COPY config.json 	./config.json
 COPY swagger.json 	./swagger.json
 COPY VERSION 		./VERSION
-COPY museum.json        ./museum.json
-COPY feed.json          ./feed.json
 COPY startup.sh         ./startup.sh
 RUN chmod 777 ./startup.sh && \
     sed -i 's/\r//' ./startup.sh

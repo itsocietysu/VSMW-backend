@@ -33,11 +33,11 @@
       "swagger_port": "8081",
       "api_port": "4201",
       "each_db": {
-        "host": "185.122.59.110",
-        "port": 5433,
-        "sid": "each_dev",
-        "user": "each",
-        "password": "Ellesmera2006",
+        "host": "89.108.103.193",
+        "port": 5432,
+        "sid": "vsmw",
+        "user": "vsmw",
+        "password": "LaiukiKepta20002015",
         "direct": null,
         "pool_size": 20
       },
@@ -83,15 +83,15 @@
     },
     {
       "name": "prod",
-      "server_host": "each.itsociety.su:4200",
+      "server_host": "89.108.103.193:4200",
       "swagger_port": "8081",
       "api_port": "4201",
       "each_db": {
-        "host": "185.185.40.39",
+        "host": "89.108.103.193",
         "port": 5432,
-        "sid": "each_prod",
-        "user": "postgres",
-        "password": "9j46cqOn9q463uPW",
+        "sid": "vsmw",
+        "user": "vsmw",
+        "password": "LaiukiKepta20002015",
         "direct": null,
         "pool_size": 20
       },

@@ -1,11 +1,8 @@
 import json
-import base64
 
 from collections import OrderedDict
 
 from vsmw.db import DBConnection
-
-from vsmw.MediaResolver.MediaResolverFactory import MediaResolverFactory
 
 class EntityBase:
     host = '.'
@@ -46,14 +43,14 @@ class EntityBase:
         with DBConnection() as session:
             session.db.add(self)
             session.db.commit()
-            return self.eid
+            return self.vid
 
         return None
 
     @classmethod
-    def delete(cls, eid):
+    def delete(cls, vid):
         with DBConnection() as session:
-            res = session.db.query(cls).filter_by(eid=eid).all()
+            res = session.db.query(cls).filter_by(vid=vid).all()
 
             if len(res):
                 [session.db.delete(_) for _ in res]
@@ -67,10 +64,10 @@ class EntityBase:
             return session.db.query(cls)
 
     @classmethod
-    def get_ownerid_entity_id(cls, eid, callRaise=False):
+    def get_ownerid_entity_id(cls, vid, callRaise=False):
         ownerid = None
 
-        res = cls.get().filter_by(eid=eid).all()
+        res = cls.get().filter_by(vid=vid).all()
 
         if len(res):
             try:

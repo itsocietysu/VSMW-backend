@@ -77,11 +77,13 @@ def httpDefault(**request_handler_args):
     resp.set_header("Path", path)
     resp.body = buffer
 
+
 def getVersion(**request_handler_args):
     resp = request_handler_args['resp']
     resp.status = falcon.HTTP_200
     with open("VERSION") as f:
         resp.body = obj_to_json({"version": f.read()[0:-1]})
+
 
 @admin_access_type_required
 def all_session(**request_handler_args):
@@ -90,9 +92,11 @@ def all_session(**request_handler_args):
     resp.body = obj_to_json([o.to_dict() for o in EntitySession.get().all()])
     resp.status = falcon.HTTP_200
 
+
 @cache.cache('get_current_session', expire=3600)
 def get_current_session_objects():
     return obj_to_json([0])
+
 
 def current_session(**request_handler_args):
     resp = request_handler_args['resp']
@@ -100,11 +104,13 @@ def current_session(**request_handler_args):
     resp.body = get_session_objects()
     resp.status = falcon.HTTP_200
 
+
 @admin_access_type_required
 def set_session(**request_handler_args):
     resp = request_handler_args['resp']
 
     resp.status = falcon.HTTP_200
+
 
 @admin_access_type_required
 def create_session(**request_handler_args):
@@ -125,6 +131,7 @@ def create_session(**request_handler_args):
 
     resp.status = falcon.HTTP_501
 
+
 @admin_access_type_required
 def update_session(**request_handler_args):
     req = request_handler_args['req']
@@ -143,6 +150,7 @@ def update_session(**request_handler_args):
         return
 
     resp.status = falcon.HTTP_501
+
 
 @admin_access_type_required
 def delete_session(**request_handler_args):
@@ -164,9 +172,11 @@ def delete_session(**request_handler_args):
 
     resp.status = falcon.HTTP_400
 
+
 @cache.cache('get_session_func', expire=3600)
 def get_session_objects(id):
     return obj_to_json([o.to_dict() for o in EntitySession.get().filter_by(vid=id).all()])
+
 
 def get_session(**request_handler_args):
     resp = request_handler_args['resp']
@@ -196,19 +206,23 @@ def create_fingerprint(**request_handler_args):
 
     resp.status = falcon.HTTP_501
 
+
 @cache.cache('get_vote_func', expire=3600)
-def get_vote_objects(id):
-    return obj_to_json([o.to_dict() for o in EntityVote.get().filter_by(vid=id).all()])
+def get_vote_objects(session, fingerprint):
+    return obj_to_json([o.to_dict() for o in EntityVote.get().filter_by(session=session, user=str(fingerprint)).all()])
+
 
 def get_vote(**request_handler_args):
     resp = request_handler_args['resp']
 
-    id = getIntPathParam("id", **request_handler_args)
+    session     = getIntPathParam("session", **request_handler_args)
+    fingerprint = getIntPathParam("fingerprint", **request_handler_args)
     if id:
-        resp.body = get_vote_objects(id)
+        resp.body = get_vote_objects(session, fingerprint)
         resp.status = falcon.HTTP_200
 
     resp.status = falcon.HTTP_400
+
 
 def create_vote(**request_handler_args):
     req = request_handler_args['req']
@@ -217,11 +231,13 @@ def create_vote(**request_handler_args):
     params = json.loads(req.stream.read().decode('utf-8'))
 
     if 'fingerprint' in params and 'value' in params and 'session' in params:
-        id = EntityVote(params['session'], params['fingerprint'], params['value'])
+        cache.invalidate(get_vote_objects, 'get_vote_func', params['session'], params['fingerprint'])
+        id = EntityVote(params['session'], params['fingerprint'], params['value']).add()
 
-    if id:
-        resp.body = get_vote_objects(id)
-        resp.status = falcon.HTTP_200
+        if id:
+            resp.body = get_vote_objects(params['session'], params['fingerprint'])
+            resp.status = falcon.HTTP_200
+            return
 
     resp.status = falcon.HTTP_400
 
@@ -263,20 +279,9 @@ class CORS(object):
             if acrh:
                 resp.set_header('Access-Control-Allow-Headers', acrh)
 
-            # if req.method == 'OPTIONS':
-            #    resp.set_header('Access-Control-Max-Age', '100')
-            #    resp.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE')
-            #    acrh = req.get_header('Access-Control-Request-Headers')
-            #    if acrh:
-            #        resp.set_header('Access-Control-Allow-Headers', acrh)
-
 
 class Auth(object):
     def process_request(self, req, resp):
-        #TODO: SWITCH ON
-        #req.context['email'] = 'serbudnik@gmail.com'
-        #return
-        # skip authentication for version, UI and Swagger
         if re.match('(/each/version|'
                      '/each/settings/urls|'
                      '/each/images|'
@@ -288,6 +293,13 @@ class Auth(object):
 
         if req.method == 'OPTIONS':
             return # pre-flight requests don't require authentication
+
+        req.context['user_email'] = 'aaa'
+        req.context['user_id'] = 'aaa'
+        req.context['user_name'] = 'aaaa'
+        req.context['access_type'] = 'admin'
+        return
+        ################################################### WARNING!
 
         token = None
         try:
@@ -333,8 +345,7 @@ with open(cfgPath) as f:
 
 general_executor = ftr.ThreadPoolExecutor(max_workers=20)
 
-#wsgi_app = api = falcon.API(middleware=[CORS(), Auth(), MultipartMiddleware()])
-wsgi_app = api = falcon.API(middleware=[CORS(), MultipartMiddleware()])
+wsgi_app = api = falcon.API(middleware=[CORS(), Auth(), MultipartMiddleware()])
 
 server = SpecServer(operation_handlers=operation_handlers)
 
@@ -357,5 +368,7 @@ if 'server_host' in cfg:
 
 with open('swagger_temp.json') as f:
     server.load_spec_swagger(f.read())
+
+#   os.remove('swagger_temp.json')
 
 api.add_sink(server, r'/')

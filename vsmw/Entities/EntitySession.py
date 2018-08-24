@@ -14,25 +14,25 @@ from vsmw.db import DBConnection
 Base = declarative_base()
 
 class EntitySession(EntityBase, Base):
-    __tablename__ = 'each_session'
+    __tablename__ = 'vsmw_session'
 
     vid = Column(Integer, Sequence('vsmw_seq'), primary_key=True)
     title   = Column(String)
     type    = Column(String)
-    picture = Column(String)
+    image   = Column(String)
     created = Column(Date)
     updated = Column(Date)
     expires = Column(Date)
 
-    json_serialize_items_list = ['eid', 'title', 'type', 'picture', 'created', 'updated', 'expires']
-    editable_items_list = ['title', 'type', 'picture', 'expires']
+    json_serialize_items_list = ['vid', 'title', 'type', 'image', 'created', 'updated', 'expires']
+    editable_items_list = ['title', 'type', 'image', 'expires']
 
-    def __init__(self, title, type, picture, expires):
+    def __init__(self, title, type, image, expires):
         super().__init__()
 
         self.title = title
         self.type = type
-        self.picture = picture
+        self.image = image
 
         ts = time.time()
         self.created = self.updated = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M')
@@ -41,10 +41,10 @@ class EntitySession(EntityBase, Base):
     @classmethod
     def add_from_json(cls, data):
         try:
-            if 'title' in data and 'type' in data and 'picture' in data and 'expires' in data:
+            if all([_ in data for _ in cls.editable_items_list]):
                 title   = data['title']
                 type    = data['type']
-                picture = data['picture']
+                picture = data['image']
                 expires = data['expires']
 
                 resolver = MediaResolverFactory.produce('image', base64.b64decode(picture))
