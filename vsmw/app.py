@@ -8,6 +8,7 @@ from collections import OrderedDict
 import falcon
 from falcon_multipart.middleware import MultipartMiddleware
 
+from sqlalchemy import func
 from vsmw import utils
 from vsmw.db import DBConnection
 from vsmw.serve_swagger import SpecServer
@@ -85,6 +86,37 @@ def getVersion(**request_handler_args):
     with open("VERSION") as f:
         resp.body = obj_to_json({"version": f.read()[0:-1]})
 
+@admin_access_type_required
+def get_stats_by_id(**request_handler_args):
+    resp = request_handler_args['resp']
+
+    with DBConnection() as session:
+        id = getIntPathParam('id', **request_handler_args)
+        entity = EntitySession.get().filter_by(vid=id).all()
+
+        obj_dict = {}
+        for _ in entity:
+            obj_dict = _.to_dict()
+
+        is_slider = entity[0].type == 'slider'
+        res = []
+        if is_slider:
+            res = list((session.db.query(
+                func.avg(EntityVote.value).label('average'),
+                func.count(EntityVote.value).label('count')
+            ).filter_by(session=id).all()))
+            print(res[0])
+        else:
+            pos_size = session.db.query(func.count(EntityVote.value)).filter_by(session=id).filter(EntityVote.value!=0).all()[0][0]
+            neg_size = session.db.query(func.count(EntityVote.value)).filter_by(session=id).filter(EntityVote.value==0).all()[0][0]
+            summ = pos_size + neg_size
+            res = [int(float(pos_size) / summ * 100.0), int(float(neg_size) / summ * 100.0)]
+
+        res = [int(_) for _ in res]
+        obj_dict.update({'stats': res})
+
+    resp.body = obj_to_json(obj_dict)
+    resp.status = falcon.HTTP_200
 
 @admin_access_type_required
 def all_session(**request_handler_args):
@@ -245,6 +277,17 @@ def create_vote(**request_handler_args):
 
     params = json.loads(req.stream.read().decode('utf-8'))
 
+    # TODO: 1. Текущая сессия? id
+    # TODO: 2. декоратор?
+    # TODO: 3. какой будет код возврата
+    # TODO: 4. Нельзя будет вообще вызвать этот метод когда придет тот самый час?
+
+    # expired = session.db.query(EntitySession.expired).filter_by(vid=   id????   ).all()[0][0]
+    # expired_time = datetime.strptime(expired)
+    # now = datetime.datetime.now()
+    # datetime_now = now.strftime("%d.%m.%Y %H:%M")
+    # if datetime_now <= expired_time:
+
     if 'fingerprint' in params and 'value' in params and 'session' in params:
         cache.invalidate(get_vote_objects, 'get_vote_func', params['session'], params['fingerprint'])
         id = EntityVote(params['session'], params['fingerprint'], params['value']).add()
@@ -262,6 +305,7 @@ def create_vote(**request_handler_args):
 
 operation_handlers = {
     # Session
+    'get_stats_by_id':    [get_stats_by_id],
     'all_session':        [all_session],
     'create_session':     [create_session],
     'update_session':     [update_session],

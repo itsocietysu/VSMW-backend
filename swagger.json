@@ -81,6 +81,42 @@
         ]
       }
     },
+    "/stats/{id}": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Get a session statistics by id",
+        "description": "",
+        "operationId": "get_stats_by_id",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of session to get stats",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
     "/set/{id}": {
       "post": {
         "tags": [
