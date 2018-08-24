@@ -95,7 +95,7 @@ def all_session(**request_handler_args):
 
 @cache.cache('get_current_session', expire=3600)
 def get_current_session_objects():
-    return obj_to_json([6])
+    return obj_to_json([7])
 
 
 def current_session(**request_handler_args):
@@ -118,8 +118,14 @@ def create_session(**request_handler_args):
     resp = request_handler_args['resp']
 
     try:
-        params = json.loads(req.stream.read().decode('utf-8'))
-        id = EntitySession.add_from_json(params)
+        params = {}
+        for _ in req.params.keys():
+            if _ == 'image':
+                params[_] = req.get_param(_).file.read()
+            else:
+                params[_] = req.get_param(_)
+
+        id = EntitySession.add_from_params(params)
 
         if id:
             resp.body = obj_to_json([o.to_dict() for o in EntitySession.get().filter_by(vid=id).all()])
@@ -138,8 +144,14 @@ def update_session(**request_handler_args):
     resp = request_handler_args['resp']
 
     try:
-        params = json.loads(req.stream.read().decode('utf-8'))
-        id = EntitySession.update_from_json(params)
+        params = {}
+        for _ in req.params.keys():
+            if _ == 'image':
+                params[_] = req.get_param(_).file.read()
+            else:
+                params[_] = req.get_param(_)
+
+        id = EntitySession.update_from_params(params)
 
         if id:
             resp.body = obj_to_json([o.to_dict() for o in EntitySession.get().filter_by(vid=id).all()])

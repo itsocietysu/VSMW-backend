@@ -39,7 +39,7 @@ class EntitySession(EntityBase, Base):
         self.expires = expires
 
     @classmethod
-    def add_from_json(cls, data):
+    def add_from_params(cls, data):
         try:
             if all([_ in data for _ in cls.editable_items_list]):
                 title   = data['title']
@@ -47,7 +47,7 @@ class EntitySession(EntityBase, Base):
                 picture = data['image']
                 expires = data['expires']
 
-                resolver = MediaResolverFactory.produce('image', base64.b64decode(picture))
+                resolver = MediaResolverFactory.produce('image', picture)
                 picture_url = resolver.Resolve()
 
                 return EntitySession(title, type, picture_url, expires).add()
@@ -57,7 +57,14 @@ class EntitySession(EntityBase, Base):
         return None
 
     @classmethod
-    def update_from_json(cls, data):
+    def update_from_params(cls, data):
+        def proxy(data, field):
+            if field == 'image':
+                resolver = MediaResolverFactory.produce('image', data[field])
+                return resolver.Resolve()
+
+            return data[field]
+
         try:
             if 'id' in data:
                 with DBConnection() as session:
@@ -67,7 +74,7 @@ class EntitySession(EntityBase, Base):
                     if len(entity):
                         for _ in entity:
                             for field in cls.editable_items_list:
-                                setattr(_, field, data[field] if field in data else getattr(_, field, None))
+                                setattr(_, field, proxy(data, field) if field in data else getattr(_, field, None))
 
                         session.db.commit()
                         return vid

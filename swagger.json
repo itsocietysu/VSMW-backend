@@ -159,13 +159,34 @@
         ],
         "parameters": [
           {
-            "name": "new_session",
-            "in": "body",
-            "description": "Session encoded in JSON string",
+            "name": "title",
+            "in": "formData",
+            "description": "Poll name",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/Session"
-            }
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "formData",
+            "description": "poll or slider",
+            "required": true,
+            "type": "string",
+            "enum": ["poll", "slider"]
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "description": "Background image, should be 1080x1920",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "name": "expires",
+            "in": "formData",
+            "description": "Expiration time example:2018-07-18 20:24:00+00:00",
+            "required": true,
+            "type":"string",
+            "format":"date-time"
           }
         ],
         "responses": {
@@ -205,13 +226,34 @@
         ],
         "parameters": [
           {
-            "name": "new_session",
-            "in": "body",
-            "description": "Session encoded in JSON string",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Session"
-            }
+            "name": "title",
+            "in": "formData",
+            "description": "Poll name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "formData",
+            "description": "poll or slider",
+            "required": false,
+            "type": "string",
+            "enum": ["poll", "slider"]
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "description": "Background image, should be 1080x1920",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "expires",
+            "in": "formData",
+            "description": "Expiration time example:2018-07-18 20:24:00+00:00",
+            "required": false,
+            "type":"string",
+            "format":"date-time"
           }
         ],
         "responses": {

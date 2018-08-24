@@ -7,17 +7,17 @@ from vsmw.MediaResolver.MediaResolver import MediaResolver
 
 import uuid
 
-MAX_IMAGE_SIDE = 1024
-MIN_IMAGE_SIDE = 256
-MAX_ASPECT_RATIO = 1.34
+MAX_IMAGE_SIDE = 2000
+MIN_IMAGE_SIDE = 1000
+MAX_ASPECT_RATIO = 1.9
 
 class ImageResolver(MediaResolver):
     def __init__(self, _type, data):
         super().__init__(data)
 
         type_mapping = {
-            'image': (1024, 256, 1.34),
-            'equipment': (512, 32, 1.34),
+            'image': (2000, 1000, 1.9),
+            'equipment': (2000, 1000, 1.9),
         }
 
         self.max_image_size, self.min_image_size, self.max_aspect_ratio = \
