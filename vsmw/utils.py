@@ -176,3 +176,9 @@ def admin_access_type_required(func_to_set_access):
             arg['resp'].status = falcon.HTTP_423
             return
     return check_access_type
+
+def fulfill_images(host, objects):
+    for _ in objects:
+        _.image = host + _.image[1:]
+
+    return objects
