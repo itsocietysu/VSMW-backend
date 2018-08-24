@@ -90,7 +90,7 @@ def getVersion(**request_handler_args):
 def all_session(**request_handler_args):
     resp = request_handler_args['resp']
 
-    resp.body = obj_to_json([o.to_dict() for o in fulfill_images(server_host, EntitySession.get().all())])
+    resp.body = obj_to_json([o.to_dict() for o in fulfill_images(base_name, EntitySession.get().all())])
     resp.status = falcon.HTTP_200
 
 
@@ -129,7 +129,7 @@ def create_session(**request_handler_args):
         id = EntitySession.add_from_params(params)
 
         if id:
-            resp.body = obj_to_json([o.to_dict() for o in fulfill_images(server_host, EntitySession.get().filter_by(vid=id).all())])
+            resp.body = obj_to_json([o.to_dict() for o in fulfill_images(base_name, EntitySession.get().filter_by(vid=id).all())])
             resp.status = falcon.HTTP_200
             return
     except ValueError:
@@ -155,7 +155,7 @@ def update_session(**request_handler_args):
         id = EntitySession.update_from_params(params)
 
         if id:
-            resp.body = obj_to_json([o.to_dict() for o in fulfill_images(server_host, EntitySession.get().filter_by(vid=id).all())])
+            resp.body = obj_to_json([o.to_dict() for o in fulfill_images(base_name, EntitySession.get().filter_by(vid=id).all())])
             resp.status = falcon.HTTP_200
             return
     except ValueError:
@@ -188,7 +188,7 @@ def delete_session(**request_handler_args):
 
 @cache.cache('get_session_func', expire=3600)
 def get_session_objects(id):
-    return obj_to_json([o.to_dict() for o in fulfill_images(server_host, EntitySession.get().filter_by(vid=id).all())])
+    return obj_to_json([o.to_dict() for o in fulfill_images(base_name, EntitySession.get().filter_by(vid=id).all())])
 
 
 def get_session(**request_handler_args):
@@ -369,6 +369,7 @@ if 'server_host' in cfg:
         swagger_json = json.loads(f.read(), object_pairs_hook=OrderedDict)
 
     server_host = cfg['server_host']
+    base_name = server_host + '/vsmw'
     swagger_json['host'] = server_host
 
     baseURL = '/each'
