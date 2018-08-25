@@ -96,13 +96,16 @@ def get_cached_stats(id, type):
 def get_stats_by_id(**request_handler_args):
     resp = request_handler_args['resp']
 
-    with DBConnection() as session:
-        id = getIntPathParam('id', **request_handler_args)
-        entity = get_session_objects(id)
+    id = getIntPathParam('id', **request_handler_args)
+    entity = get_session_objects(id)
+    obj_dict = []
+
+    if len(entity):
         stats = get_cached_stats(id, entity[0]["type"])
 
         obj_dict = entity[0]
         obj_dict.update({'stats': stats})
+        obj_dict = [obj_dict]
 
     resp.body = obj_to_json(obj_dict)
     resp.status = falcon.HTTP_200
