@@ -215,6 +215,32 @@
         ]
       }
     },
+    "/current": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Returns current session",
+        "description": "",
+        "operationId": "current_session",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
     "/add": {
       "post": {
         "tags": [

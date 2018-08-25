@@ -323,6 +323,7 @@ operation_handlers = {
     'get_current_session':      [get_current_session],
     'set_current_session':      [set_current_session],
     'set_session':              [set_session],
+    'current_session':          [current_session],
 
     # User
     'create_fingerprint': [create_fingerprint],
