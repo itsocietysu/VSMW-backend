@@ -25,9 +25,9 @@ CREATE TABLE "vsmw_user" (
 DROP TABLE IF EXISTS "vsmw_vote";
 CREATE TABLE "vsmw_vote" (
 	"session" BIGSERIAL NOT NULL,
-	"user" VARCHAR(256) NOT NULL UNIQUE,
+	"user" VARCHAR(256) NOT NULL,
 	"value" INT NOT NULL,
-	PRIMARY KEY (session, "user", value)
+	PRIMARY KEY (session, "user")
 ) WITH (
   OIDS=FALSE
 );

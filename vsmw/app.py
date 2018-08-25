@@ -269,15 +269,17 @@ def create_vote(**request_handler_args):
     params = json.loads(req.stream.read().decode('utf-8'))
 
     if 'fingerprint' in params and 'value' in params and 'session' in params:
-        cache.invalidate(get_vote_objects, 'get_vote_func', params['session'], params['fingerprint'])
-        id = EntityVote(params['session'], params['fingerprint'], params['value']).add()
+        try:
+            id = EntityVote(params['session'], params['fingerprint'], params['value']).add()
 
-        if id:
-            resp.body = get_vote_objects(params['session'], params['fingerprint'])
-            resp.status = falcon.HTTP_200
-            return
+            if id:
+                cache.invalidate(get_vote_objects, 'get_vote_func', params['session'], params['fingerprint'])
+        except:
+            pass
 
-    resp.status = falcon.HTTP_400
+        resp.body = obj_to_json(get_vote_objects(params['session'], params['fingerprint']))
+        resp.status = falcon.HTTP_200
+        return
 
 
 # End of game feature set functions

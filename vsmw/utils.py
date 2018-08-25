@@ -71,15 +71,6 @@ def getIntPathParam(name, **request_handler_args):
     except ValueError:
         return None
 
-
-# def ReadEntireLobs(entire_tuple):
-#     result = []
-#     for item in entire_tuple:
-#         if isinstance(item, cx_Oracle.LOB):
-#             item = item.read()
-#         result.append(item)
-#     return tuple(result)
-
 def GetAuthProfile(jso, profile_name="local", args=None):
     ret = None
     if "profiles" in jso:
