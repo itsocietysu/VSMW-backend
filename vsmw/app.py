@@ -19,6 +19,7 @@ from vsmw.Entities.EntityBase import EntityBase
 from vsmw.Entities.EntitySession import EntitySession
 from vsmw.Entities.EntityUser import EntityUser
 from vsmw.Entities.EntityVote import EntityVote
+from vsmw.Entities.EntityCurrentSession import EntityCurrentSession
 
 from vsmw.auth import auth
 
@@ -229,6 +230,29 @@ def get_session(**request_handler_args):
     resp.status = falcon.HTTP_400
 
 
+def get_current_session(**request_handler_args):
+    resp = request_handler_args['resp']
+    try:
+        resp.body = obj_to_json([o.to_dict(['curr_id']) for o in EntityCurrentSession.get().all()])
+        resp.status = falcon.HTTP_200
+    except:
+        resp.status = falcon.HTTP_400
+        return None
+
+
+def set_current_session(**request_handler_args):
+    resp = request_handler_args['resp']
+    try:
+        value = getIntPathParam('id', **request_handler_args)
+        EntityCurrentSession.update_from_params({'curr_id': value})
+        #resp.body = obj_to_json({'curr_id': value})
+        resp.status = falcon.HTTP_200
+        return None
+    except:
+        resp.status = falcon.HTTP_400
+        return None
+
+
 def create_fingerprint(**request_handler_args):
     resp = request_handler_args['resp']
 
@@ -290,14 +314,15 @@ def create_vote(**request_handler_args):
 
 operation_handlers = {
     # Session
-    'get_stats_by_id':    [get_stats_by_id],
-    'all_session':        [all_session],
-    'create_session':     [create_session],
-    'update_session':     [update_session],
-    'delete_session':     [delete_session],
-    'get_session':        [get_session],
-    'current_session':    [current_session],
-    'set_session':        [set_session],
+    'get_stats_by_id':          [get_stats_by_id],
+    'all_session':              [all_session],
+    'create_session':           [create_session],
+    'update_session':           [update_session],
+    'delete_session':           [delete_session],
+    'get_session':              [get_session],
+    'get_current_session':      [get_current_session],
+    'set_current_session':      [set_current_session],
+    'set_session':              [set_session],
 
     # User
     'create_fingerprint': [create_fingerprint],

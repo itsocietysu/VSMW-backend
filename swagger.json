@@ -153,16 +153,52 @@
         ]
       }
     },
-    "/current": {
+    "/get/current": {
       "get": {
         "tags": [
           "Session"
         ],
         "summary": "Returns current session",
         "description": "",
-        "operationId": "current_session",
+        "operationId": "get_current_session",
         "produces": [
           "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
+    "/set/current/{id}": {
+      "post": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Sets current session",
+        "description": "",
+        "operationId": "set_current_session",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "new session id to set as a current",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
         ],
         "responses": {
           "200": {
