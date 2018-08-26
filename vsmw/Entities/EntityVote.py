@@ -36,7 +36,8 @@ class EntityVote(EntityBase, Base):
                     func.avg(EntityVote.value).label('average'),
                     func.count(EntityVote.value).label('count')
                 ).filter_by(session=id).all())[0])
-                print(res[0])
+                if res[1] == 0:
+                    res[0] = 0
             else:
                 pos_size = \
                 session.db.query(
@@ -49,9 +50,12 @@ class EntityVote(EntityBase, Base):
                 ).filter_by(session=id).filter(EntityVote.value == 0).all()[0][0]
 
                 summ = pos_size + neg_size
-                pos = int(float(pos_size) / summ * 100.0)
+                if summ > 0:
+                    pos = int(float(pos_size) / summ * 100.0)
 
-                res = [pos, 100 - pos]
+                    res = [pos, 100 - pos]
+                else:
+                    res = [0, 0]
 
             return [int(_) for _ in res]
 
