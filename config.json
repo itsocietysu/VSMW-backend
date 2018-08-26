@@ -83,7 +83,7 @@
     },
     {
       "name": "prod",
-      "server_host": "89.108.103.193:4200",
+      "server_host": "invote.ru:4200",
       "swagger_port": "8081",
       "api_port": "4201",
       "each_db": {

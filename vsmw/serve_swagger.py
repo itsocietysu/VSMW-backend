@@ -17,7 +17,7 @@ import json
 import logging
 from collections import OrderedDict
 from urllib.parse import parse_qs
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.CRITICAL)
 log = logging.getLogger(__name__)
 from falcon.routing import compile_uri_template
 

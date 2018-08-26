@@ -1,5 +1,5 @@
 beaker
-waitress
+uwsgi
 requests
 falcon
 psycopg2-binary

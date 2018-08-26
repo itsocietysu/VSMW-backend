@@ -9,6 +9,7 @@ COPY vsmw/       ./vsmw/
 COPY swagger-ui/ ./swagger-ui/
 
 COPY server.py 		./server.py
+COPY server_prod.py 		./server_prod.py
 COPY config.json 	./config.json
 COPY swagger.json 	./swagger.json
 COPY VERSION 		./VERSION

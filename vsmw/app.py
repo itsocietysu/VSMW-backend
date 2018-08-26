@@ -121,7 +121,7 @@ def all_session(**request_handler_args):
 
 @cache.cache('get_current_session', expire=3600)
 def get_current_session_objects():
-    return [7]
+    return [_.curr_id for _ in EntityCurrentSession.get().all()]
 
 
 def current_session(**request_handler_args):
@@ -131,11 +131,21 @@ def current_session(**request_handler_args):
     resp.status = falcon.HTTP_200
 
 
+
 @admin_access_type_required
 def set_session(**request_handler_args):
     resp = request_handler_args['resp']
-
-    resp.status = falcon.HTTP_200
+    try:
+        value = getIntPathParam('id', **request_handler_args)
+        EntityCurrentSession.update_from_params({'curr_id': value})
+        cache.invalidate(get_current_session_objects, 'get_current_session', value)
+        resp.body = obj_to_json(get_current_session_objects())
+        resp.status = falcon.HTTP_200
+        return None
+    except Exception as e:
+        resp.body = obj_to_json({'message': str(e)})
+        resp.status = falcon.HTTP_400
+        return None
 
 
 @admin_access_type_required
@@ -229,30 +239,6 @@ def get_session(**request_handler_args):
 
     resp.status = falcon.HTTP_400
 
-
-def get_current_session(**request_handler_args):
-    resp = request_handler_args['resp']
-    try:
-        resp.body = obj_to_json([o.to_dict(['curr_id']) for o in EntityCurrentSession.get().all()])
-        resp.status = falcon.HTTP_200
-    except:
-        resp.status = falcon.HTTP_400
-        return None
-
-
-def set_current_session(**request_handler_args):
-    resp = request_handler_args['resp']
-    try:
-        value = getIntPathParam('id', **request_handler_args)
-        EntityCurrentSession.update_from_params({'curr_id': value})
-        #resp.body = obj_to_json({'curr_id': value})
-        resp.status = falcon.HTTP_200
-        return None
-    except:
-        resp.status = falcon.HTTP_400
-        return None
-
-
 def create_fingerprint(**request_handler_args):
     resp = request_handler_args['resp']
 
@@ -320,8 +306,6 @@ operation_handlers = {
     'update_session':           [update_session],
     'delete_session':           [delete_session],
     'get_session':              [get_session],
-    'get_current_session':      [get_current_session],
-    'set_current_session':      [set_current_session],
     'set_session':              [set_session],
     'current_session':          [current_session],
 
