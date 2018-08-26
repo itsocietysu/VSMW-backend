@@ -336,6 +336,8 @@ class CORS(object):
 
 class Auth(object):
     def process_request(self, req, resp):
+        req.context['access_type'] = ''
+
         if re.match('(/each/version|'
                      '/each/settings/urls|'
                      '/each/images|'
@@ -357,8 +359,7 @@ class Auth(object):
             else:
                 token = req.params.get('access_token')
         except:
-            raise falcon.HTTPUnauthorized(description='Token was not provided in schema [berear <Token>]',
-                                      challenges=['Bearer realm=http://GOOOOGLE'])
+            return
 
         error = 'Authorization required.'
         if token:
@@ -375,8 +376,7 @@ class Auth(object):
 
                 return # passed access token is valid
 
-        raise falcon.HTTPUnauthorized(description=error,
-                                      challenges=['Bearer realm=http://GOOOOGLE'])
+        return
 
 
 logging.getLogger().setLevel(logging.DEBUG)
