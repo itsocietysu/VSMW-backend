@@ -118,7 +118,7 @@ def all_session(**request_handler_args):
     resp.status = falcon.HTTP_200
 
 
-@cache.cache('get_current_session', expire=3600)
+@cache.cache('get_current_session_group', expire=3600)
 def get_current_session_objects():
     return [_.curr_id for _ in EntityCurrentSession.get().all()]
 
@@ -137,7 +137,7 @@ def set_session(**request_handler_args):
     try:
         value = getIntPathParam('id', **request_handler_args)
         EntityCurrentSession.update_from_params({'curr_id': value})
-        cache.invalidate(get_current_session_objects, 'get_current_session', value)
+        cache.invalidate(get_current_session_objects, 'get_current_session_group')
         resp.body = obj_to_json(get_current_session_objects())
         resp.status = falcon.HTTP_200
         return None
