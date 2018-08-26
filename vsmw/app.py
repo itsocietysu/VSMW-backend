@@ -93,7 +93,6 @@ def get_cached_stats(id, type):
     return EntityVote.stats(id, type)
 
 
-@admin_access_type_required
 def get_stats_by_id(**request_handler_args):
     resp = request_handler_args['resp']
 
