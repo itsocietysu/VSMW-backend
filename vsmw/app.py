@@ -348,11 +348,6 @@ class Auth(object):
         if req.method == 'OPTIONS':
             return # pre-flight requests don't require authentication
 
-        req.context['user_email'] = 'aaa'
-        req.context['user_id'] = 'aaa'
-        req.context['user_name'] = 'aaaa'
-        req.context['access_type'] = 'admin'
-        return
         ################################################### WARNING!
 
         token = None
