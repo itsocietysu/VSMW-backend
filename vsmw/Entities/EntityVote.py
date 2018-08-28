@@ -39,6 +39,11 @@ class EntityVote(EntityBase, Base):
                     func.count(EntityVote.value).filter(and_(EntityVote.value > 60, EntityVote.value <= 80)).label('count3'),
                     func.count(EntityVote.value).filter(and_(EntityVote.value > 80, EntityVote.value <= 100)).label('count4'),
                 ).filter_by(session=id).all())[0])
+
+                all_res = sum(res)
+
+                if all_res > 0:
+                    res = [int(float(_) / float(all_res) * 100) for _ in res]
             else:
                 pos_size = \
                 session.db.query(

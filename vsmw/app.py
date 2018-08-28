@@ -249,12 +249,14 @@ def reset_session(**request_handler_args):
     if id is not None:
         try:
             with DBConnection() as db_session:
+                fp = db_session.db.query(EntityVote).filter_by(session=id).all()
                 db_session.db.query(EntityVote).filter_by(session=id).delete()
                 db_session.db.commit()
 
             resp.status = falcon.HTTP_200
             cache.invalidate(get_session_objects, 'get_session_func', id)
-            cache.invalidate(get_vote_objects, 'get_vote_func', id)
+            for _ in fp:
+                cache.invalidate(get_vote_objects, 'get_vote_func', id, _.user)
             return
 
         except FileNotFoundError:
