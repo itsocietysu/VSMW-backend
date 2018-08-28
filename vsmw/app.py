@@ -119,16 +119,31 @@ def all_session(**request_handler_args):
 
 
 @cache.cache('get_current_session_group', expire=3600)
-def get_current_session_objects():
+def get_current_session_id():
     return [_.curr_id for _ in EntityCurrentSession.get().all()]
+
+
+@cache.cache('get_current_session_group_object', expire=3600)
+def get_current_session_object():
+    res = []
+    for _ in EntityCurrentSession.get().all():
+        res.extend(get_session_objects(_.curr_id))
+
+    return res
 
 
 def current_session(**request_handler_args):
     resp = request_handler_args['resp']
 
-    resp.body = obj_to_json(get_current_session_objects())
+    resp.body = obj_to_json(get_current_session_id())
     resp.status = falcon.HTTP_200
 
+
+def current_session_object(**request_handler_args):
+    resp = request_handler_args['resp']
+
+    resp.body = obj_to_json(get_current_session_object())
+    resp.status = falcon.HTTP_200
 
 
 @admin_access_type_required
@@ -137,8 +152,9 @@ def set_session(**request_handler_args):
     try:
         value = getIntPathParam('id', **request_handler_args)
         EntityCurrentSession.update_from_params({'curr_id': value})
-        cache.invalidate(get_current_session_objects, 'get_current_session_group')
-        resp.body = obj_to_json(get_current_session_objects())
+        cache.invalidate(get_current_session_id, 'get_current_session_group')
+        cache.invalidate(get_current_session_object, 'get_current_session_group_object')
+        resp.body = obj_to_json(get_current_session_id())
         resp.status = falcon.HTTP_200
         return None
     except Exception as e:
@@ -189,9 +205,11 @@ def update_session(**request_handler_args):
         id = EntitySession.update_from_params(params)
 
         if id:
-            resp.body = obj_to_json([o.to_dict() for o in fulfill_images(base_name, EntitySession.get().filter_by(vid=id).all())])
-            resp.status = falcon.HTTP_200
             cache.invalidate(get_session_objects, 'get_session_func', id)
+            cache.invalidate(get_current_session_object, 'get_current_session_group_object')
+            resp.body = obj_to_json(get_session_objects(id))
+
+            resp.status = falcon.HTTP_200
             return
     except ValueError:
         resp.status = falcon.HTTP_405
@@ -217,6 +235,30 @@ def delete_session(**request_handler_args):
         if not len(object):
             resp.status = falcon.HTTP_200
             cache.invalidate(get_session_objects, 'get_session_func', id)
+            return
+
+    resp.status = falcon.HTTP_400
+
+
+@admin_access_type_required
+def reset_session(**request_handler_args):
+    resp = request_handler_args['resp']
+
+    id = getIntPathParam("id", **request_handler_args)
+
+    if id is not None:
+        try:
+            with DBConnection() as db_session:
+                db_session.db.query(EntityVote).filter_by(session=id).delete()
+                db_session.db.commit()
+
+            resp.status = falcon.HTTP_200
+            cache.invalidate(get_session_objects, 'get_session_func', id)
+            cache.invalidate(get_vote_objects, 'get_vote_func', id)
+            return
+
+        except FileNotFoundError:
+            resp.status = falcon.HTTP_404
             return
 
     resp.status = falcon.HTTP_400
@@ -280,16 +322,23 @@ def create_vote(**request_handler_args):
 
     params = json.loads(req.stream.read().decode('utf-8'))
 
+    curr_sess = 0
     if 'fingerprint' in params and 'value' in params and 'session' in params:
         try:
-            id = EntityVote(params['session'], params['fingerprint'], params['value']).add()
+            curr_sessions = get_current_session_id()
+            curr_sess = curr_sessions[0] if len(curr_sessions) else -1
+            if curr_sess != params['session']:
+                raise Exception('Only current session allowed')
+
+            id = EntityVote(curr_sess, params['fingerprint'], params['value']).add()
 
             if id:
-                cache.invalidate(get_vote_objects, 'get_vote_func', params['session'], params['fingerprint'])
+                cache.invalidate(get_vote_objects, 'get_vote_func', curr_sess, params['fingerprint'])
         except:
-            pass
+            resp.body = obj_to_json([])
+            resp.status = falcon.HTTP_404
 
-        resp.body = obj_to_json(get_vote_objects(params['session'], params['fingerprint']))
+        resp.body = obj_to_json(get_vote_objects(curr_sess, params['fingerprint']))
         resp.status = falcon.HTTP_200
         return
 
@@ -304,9 +353,11 @@ operation_handlers = {
     'create_session':           [create_session],
     'update_session':           [update_session],
     'delete_session':           [delete_session],
+    'reset_session':            [reset_session],
     'get_session':              [get_session],
     'set_session':              [set_session],
     'current_session':          [current_session],
+    'current_session_object':   [current_session_object],
 
     # User
     'create_fingerprint': [create_fingerprint],
@@ -390,8 +441,6 @@ with open(cfgPath) as f:
     DBConnection.configure(**cfg['each_db'])
     if 'oidc' in cfg:
         cfg_oidc = cfg['oidc']
-
-general_executor = ftr.ThreadPoolExecutor(max_workers=20)
 
 wsgi_app = api = falcon.API(middleware=[CORS(), Auth(), MultipartMiddleware()])
 

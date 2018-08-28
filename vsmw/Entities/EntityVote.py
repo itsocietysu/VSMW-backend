@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, and_
 from sqlalchemy.ext.declarative import declarative_base
 
 from vsmw.Entities.EntityBase import EntityBase
@@ -33,11 +33,12 @@ class EntityVote(EntityBase, Base):
         with DBConnection() as session:
             if type == 'slider':
                 res = list((session.db.query(
-                    func.avg(EntityVote.value).label('average'),
-                    func.count(EntityVote.value).label('count')
+                    func.count(EntityVote.value).filter(and_(EntityVote.value >= 0, EntityVote.value <= 20)).label('count0'),
+                    func.count(EntityVote.value).filter(and_(EntityVote.value > 20, EntityVote.value <= 40)).label('count1'),
+                    func.count(EntityVote.value).filter(and_(EntityVote.value > 40, EntityVote.value <= 60)).label('count2'),
+                    func.count(EntityVote.value).filter(and_(EntityVote.value > 60, EntityVote.value <= 80)).label('count3'),
+                    func.count(EntityVote.value).filter(and_(EntityVote.value > 80, EntityVote.value <= 100)).label('count4'),
                 ).filter_by(session=id).all())[0])
-                if res[1] == 0:
-                    res[0] = 0
             else:
                 pos_size = \
                 session.db.query(

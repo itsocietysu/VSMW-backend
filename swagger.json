@@ -179,6 +179,32 @@
         ]
       }
     },
+    "/current_object": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Returns current session object",
+        "description": "",
+        "operationId": "current_session_object",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      }
+    },
     "/add": {
       "post": {
         "tags": [
@@ -373,6 +399,40 @@
             "name": "id",
             "in": "path",
             "description": "Session id to unlink",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        },
+        "security": [
+          {
+            "auth_env": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Reset session",
+        "description": "",
+        "operationId": "reset_session",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Session id to reset",
             "required": true,
             "type": "integer",
             "format": "int64"
