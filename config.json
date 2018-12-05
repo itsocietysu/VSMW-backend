@@ -87,7 +87,7 @@
       "swagger_port": "8081",
       "api_port": "4201",
       "each_db": {
-        "host": "89.108.103.193",
+        "host": "176.99.12.32",
         "port": 5432,
         "sid": "vsmw",
         "user": "vsmw",
