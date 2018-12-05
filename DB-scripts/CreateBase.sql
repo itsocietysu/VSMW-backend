@@ -14,6 +14,13 @@ CREATE TABLE "vsmw_session" (
   OIDS=FALSE
 );
 
+DROP TABLE IF EXISTS "vsmw_curr_session";
+CREATE TABLE "vsmw_curr_session" (
+	"curr_id" BIGSERIAL NOT NULL PRIMARY KEY
+) WITH (
+  OIDS=FALSE
+);
+
 DROP TABLE IF EXISTS "vsmw_user";
 CREATE TABLE "vsmw_user" (
 	"vid" BIGSERIAL NOT NULL PRIMARY KEY,
