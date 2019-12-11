@@ -351,7 +351,7 @@ def parse_plan(**request_handler_args):
 
     id = getIntPathParam("id", **request_handler_args)
     if id:
-        obj = OrderedDict([('vid', str(id)), ('image', base_name + '/images/parsed_plan' + str(id))])
+        obj = OrderedDict([('vid', str(id)), ('image', base_name + '/images/parsed_plan' + str(id) + '.png')])
         resp.body = obj_to_json(obj)
         resp.status = falcon.HTTP_200
         time.sleep(4)
