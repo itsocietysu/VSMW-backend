@@ -8,5 +8,9 @@ base
 numpy
 scipy
 scikit-image
+opencv-python
 matplotlib
 falcon-multipart
+Pillow
+olefile
+waitress

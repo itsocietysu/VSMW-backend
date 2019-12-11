@@ -3,6 +3,8 @@ from io import BytesIO
 from skimage import io
 from skimage.transform import rescale
 
+import cv2
+
 from vsmw.MediaResolver.MediaResolver import MediaResolver
 
 import uuid
@@ -46,7 +48,8 @@ class ImageResolver(MediaResolver):
 
         if max(w, h) > self.max_image_size:
             ds = self.max_image_size / max(w, h)
-            img = rescale(image=img, scale=ds)
+            img = cv2.resize(img, (int(w * ds), int(h * ds)), interpolation=cv2.INTER_AREA)
+            # img = rescale(image=img, scale=ds)
 
         if min(w, h) < self.min_image_size:
             raise Exception("images size too small, minimum side size = %i" % self.min_image_size)

@@ -25,8 +25,8 @@ pyhton ./server.py --profile dev
 
 will start at 
 ```python
-http://0.0.0.0:4201/each/
+http://0.0.0.0:4201/vsmw/
 ```
 
-if running on localhost then visit the page after the start: [http://127.0.0.1:4201/each/swagger-ui/](http://127.0.0.1:4201/each/swagger-ui/)
+if running on localhost then visit the page after the start: [http://127.0.0.1:4201/vsmw/swagger-ui/](http://127.0.0.1:4201/each/swagger-ui/)
 

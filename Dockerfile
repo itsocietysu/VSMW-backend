@@ -2,8 +2,8 @@ FROM python:3.6.6
 
 WORKDIR /usr/src/app
 
-COPY Requirements.txt ./
-RUN pip install --no-cache-dir -r Requirements.txt
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY vsmw/       ./vsmw/
 COPY swagger-ui/ ./swagger-ui/

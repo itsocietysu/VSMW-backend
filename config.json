@@ -33,11 +33,11 @@
       "swagger_port": "8081",
       "api_port": "4201",
       "each_db": {
-        "host": "89.108.103.193",
-        "port": 5432,
+        "host": "127.0.0.1",
+        "port": 5433,
         "sid": "vsmw",
         "user": "vsmw",
-        "password": "LaiukiKepta20002015",
+        "password": "vsmw",
         "direct": null,
         "pool_size": 20
       },
@@ -56,15 +56,15 @@
     },
     {
       "name": "dev",
-      "server_host": "each.itsociety.su:4201",
+      "server_host": "80.78.255.236:4201",
       "swagger_port": "8081",
       "api_port": "4201",
       "each_db": {
-        "host": "185.122.59.110",
+        "host": "80.78.255.236",
         "port": 5433,
-        "sid": "each_dev",
-        "user": "each",
-        "password": "Ellesmera2006",
+        "sid": "vsmw",
+        "user": "vsmw",
+        "password": "vsmw",
         "direct": null,
         "pool_size": 20
       },
@@ -83,15 +83,15 @@
     },
     {
       "name": "prod",
-      "server_host": "invote.ru:4200",
+      "server_host": "80.78.255.236:4201",
       "swagger_port": "8081",
       "api_port": "4201",
       "each_db": {
-        "host": "193.124.206.143",
-        "port": 5432,
+        "host": "80.78.255.236",
+        "port": 5433,
         "sid": "vsmw",
-        "user": "vsmw",
-        "password": "LaiukiKepta20002015",
+        "user": "postgres",
+        "password": "vsmw",
         "direct": null,
         "pool_size": 20
       },

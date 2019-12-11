@@ -4,6 +4,7 @@ import logging
 import os
 import re
 from collections import OrderedDict
+import time
 
 import falcon
 from falcon_multipart.middleware import MultipartMiddleware
@@ -345,6 +346,20 @@ def create_vote(**request_handler_args):
         return
 
 
+def parse_plan(**request_handler_args):
+    resp = request_handler_args['resp']
+
+    id = getIntPathParam("id", **request_handler_args)
+    if id:
+        obj = OrderedDict([('vid', str(id)), ('image', base_name + '/images/parsed_plan' + str(id))])
+        resp.body = obj_to_json(obj)
+        resp.status = falcon.HTTP_200
+        time.sleep(4)
+        return
+
+    resp.status = falcon.HTTP_400
+
+
 # End of game feature set functions
 # ---------------------------------
 
@@ -360,6 +375,7 @@ operation_handlers = {
     'set_session':              [set_session],
     'current_session':          [current_session],
     'current_session_object':   [current_session_object],
+    'parse_plan':               [parse_plan],
 
     # User
     'create_fingerprint': [create_fingerprint],
@@ -373,7 +389,7 @@ operation_handlers = {
 }
 
 class CORS(object):
-    def process_response(self, req, resp, resource):
+    def process_response(self, req, resp, resource, params):
         origin = req.get_header('Origin')
         if origin:
             resp.set_header('Access-Control-Allow-Origin', origin)
@@ -444,7 +460,8 @@ with open(cfgPath) as f:
     if 'oidc' in cfg:
         cfg_oidc = cfg['oidc']
 
-wsgi_app = api = falcon.API(middleware=[CORS(), Auth(), MultipartMiddleware()])
+# wsgi_app = api = falcon.API(middleware=[CORS(), Auth(), MultipartMiddleware()])
+wsgi_app = api = falcon.API(middleware=[CORS(), MultipartMiddleware()])
 
 server = SpecServer(operation_handlers=operation_handlers)
 

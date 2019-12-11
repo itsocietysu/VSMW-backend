@@ -20,7 +20,7 @@ CREATE TABLE "vsmw_curr_session" (
 ) WITH (
   OIDS=FALSE
 );
-INSERT INTO vsmw_curr_session VALUES (1)
+INSERT INTO vsmw_curr_session VALUES (1);
 
 DROP TABLE IF EXISTS "vsmw_user";
 CREATE TABLE "vsmw_user" (
