@@ -51,8 +51,8 @@ class ImageResolver(MediaResolver):
             img = cv2.resize(img, (int(w * ds), int(h * ds)), interpolation=cv2.INTER_AREA)
             # img = rescale(image=img, scale=ds)
 
-        if min(w, h) < self.min_image_size:
-            raise Exception("images size too small, minimum side size = %i" % self.min_image_size)
+        # if min(w, h) < self.min_image_size:
+        #     raise Exception("images size too small, minimum side size = %i" % self.min_image_size)
 
         self.url = './images/%s.jpg' % uuid.uuid4().hex
         io.imsave(self.url, img[:, :, :3])
